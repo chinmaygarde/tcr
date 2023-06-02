@@ -26,11 +26,19 @@ set(GLFW_BUILD_TESTS FALSE)
 set(GLFW_BUILD_DOCS FALSE)
 set(GLFW_INSTALL FALSE)
 add_subdirectory(third_party/glfw)
+add_subdirectory(third_party/glm)
 
 include(GoogleTest)
 
 add_library(tcr
-
+  src/allocation.cc
+  src/allocation.h
+  src/color.cc
+  src/color.h
+  src/formats.cc
+  src/formats.h
+  src/texture.cc
+  src/texture.h
 )
 
 target_compile_options(tcr
@@ -40,6 +48,7 @@ target_compile_options(tcr
     -Wextra
     -Wno-unused-parameter
     -Wno-missing-field-initializers
+    -Wno-unused-private-field
 )
 
 target_compile_definitions(tcr
@@ -47,7 +56,10 @@ target_compile_definitions(tcr
     -D_CRT_SECURE_NO_WARNINGS
 )
 
-target_link_libraries(tcr fml)
+target_link_libraries(tcr
+  fml
+  glm::glm
+)
 
 target_include_directories(tcr
   PUBLIC
