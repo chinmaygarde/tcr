@@ -14,7 +14,7 @@ Playground::Playground() = default;
 
 Playground::~Playground() = default;
 
-bool Playground::OpenPlaygroundHere(std::function<bool()> callback) {
+bool Playground::OpenPlaygroundHere(PlaygroundCallback callback) {
   if (!callback) {
     return false;
   }
@@ -42,12 +42,20 @@ bool Playground::OpenPlaygroundHere(std::function<bool()> callback) {
   });
   fml::ScopedCleanupClosure auto_destroy_window(
       [window]() { ::glfwDestroyWindow(window); });
+
+  Texture texture;
   while (true) {
     ::glfwPollEvents();
     if (::glfwWindowShouldClose(window)) {
       return true;
     }
-    if (!callback()) {
+    int width = 0;
+    int height = 0;
+    ::glfwGetWindowSize(window, &width, &height);
+    if (!texture.Resize({width, height})) {
+      return false;
+    }
+    if (!callback(texture)) {
       return false;
     }
   }

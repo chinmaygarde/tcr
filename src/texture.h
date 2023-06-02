@@ -10,13 +10,13 @@ namespace tcr {
 
 class Texture {
  public:
-  Texture(glm::ivec2 size);
+  Texture();
 
   ~Texture();
 
-  bool IsValid() const;
+  [[nodiscard]] bool Resize(glm::ivec2 size);
 
-  bool Fill(Color color);
+  void Fill(Color color);
 
   Color* At(size_t x, size_t y) const {
     return allocation_.At((y * size_.x) + x);
@@ -25,7 +25,6 @@ class Texture {
  private:
   glm::ivec2 size_ = {};
   Allocation<Color> allocation_;
-  bool is_valid_ = false;
 
   FML_DISALLOW_COPY_AND_ASSIGN(Texture);
 };

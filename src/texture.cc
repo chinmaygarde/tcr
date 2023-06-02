@@ -4,25 +4,23 @@
 
 namespace tcr {
 
-Texture::Texture(glm::ivec2 size) : size_(size) {
-  is_valid_ = allocation_.Truncate(size_.x * size_.y);
-}
+Texture::Texture() = default;
 
 Texture::~Texture() = default;
 
-bool Texture::IsValid() const {
-  return is_valid_;
+bool Texture::Resize(glm::ivec2 size) {
+  if (allocation_.Truncate(size.x * size.y)) {
+    size_ = size;
+    return true;
+  }
+  return false;
 }
 
-bool Texture::Fill(Color color) {
-  if (!IsValid()) {
-    return false;
-  }
+void Texture::Fill(Color color) {
   Color* buffer = allocation_.At();
   for (int i = 0; i < size_.x * size_.y; i++) {
     std::memcpy(buffer + i, &color, sizeof(color));
   }
-  return true;
 }
 
 }  // namespace tcr

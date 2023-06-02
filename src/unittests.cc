@@ -10,7 +10,10 @@ namespace tcr {
 using TCRTest = Playground;
 
 TEST_F(TCRTest, CanOpenPlayground) {
-  OpenPlaygroundHere([]() { return true; });
+  OpenPlaygroundHere([](Texture& texture) {
+    texture.Fill(kColorPink);
+    return true;
+  });
 }
 
 TEST_F(TCRTest, CanCreateColors) {
@@ -39,9 +42,9 @@ TEST_F(TCRTest, CanCreateAllocations) {
 }
 
 TEST_F(TCRTest, CanCreateTexture) {
-  Texture tex({2, 2});
-  ASSERT_TRUE(tex.IsValid());
-  ASSERT_TRUE(tex.Fill(kColorRed));
+  Texture tex;
+  ASSERT_TRUE(tex.Resize({2, 2}));
+  tex.Fill(kColorRed);
   ASSERT_EQ(*tex.At(0, 0), kColorRed);
   ASSERT_EQ(*tex.At(0, 1), kColorRed);
   ASSERT_EQ(*tex.At(1, 0), kColorRed);
