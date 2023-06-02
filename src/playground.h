@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "fml/macros.h"
 #include "gtest/gtest.h"
 
@@ -10,6 +12,8 @@ class Playground : public ::testing::Test {
   Playground();
 
   ~Playground();
+
+  bool OpenPlaygroundHere(std::function<bool()> callback);
 
  private:
   FML_DISALLOW_COPY_AND_ASSIGN(Playground);
