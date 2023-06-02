@@ -57,6 +57,8 @@ target_include_directories(tcr
 
 add_executable(tcr_unittests
   src/unittests.cc
+  src/playground.cc
+  src/playground.h
 )
 
 target_link_libraries(tcr_unittests
