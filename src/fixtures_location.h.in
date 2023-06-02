@@ -1,0 +1,3 @@
+#pragma once
+
+#cmakedefine TCR_ASSETS_LOCATION "@TCR_ASSETS_LOCATION@" "/"
