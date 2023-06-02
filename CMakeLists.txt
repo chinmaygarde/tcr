@@ -20,6 +20,12 @@ add_subdirectory(third_party/fml)
 set(GOOGLETEST_PATH "third_party/googletest")
 set(BENCHMARK_ENABLE_TESTING FALSE)
 add_subdirectory(third_party/googlebenchmark)
+set(GLFW_BUILD_EXAMPLES FALSE)
+set(GLFW_BUILD_TESTS FALSE)
+set(GLFW_BUILD_TESTS FALSE)
+set(GLFW_BUILD_DOCS FALSE)
+set(GLFW_INSTALL FALSE)
+add_subdirectory(third_party/glfw)
 
 include(GoogleTest)
 
@@ -53,7 +59,11 @@ add_executable(tcr_unittests
   src/unittests.cc
 )
 
-target_link_libraries(tcr_unittests tcr gtest_main)
+target_link_libraries(tcr_unittests
+  tcr
+  gtest_main
+  glfw
+)
 
 get_filename_component(TCR_ASSETS_LOCATION assets ABSOLUTE)
 configure_file(src/fixtures_location.h.in fixtures_location.h @ONLY)
