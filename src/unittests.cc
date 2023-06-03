@@ -11,7 +11,7 @@ using TCRTest = Playground;
 
 TEST_F(TCRTest, CanOpenPlayground) {
   OpenPlaygroundHere([](Texture& texture) {
-    texture.Fill(kColorPink);
+    texture.Fill(kColorSlateGray);
     return true;
   });
 }

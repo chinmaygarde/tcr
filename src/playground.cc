@@ -2,8 +2,7 @@
 
 #include <mutex>
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include <SDL.h>
 
 #include "fml/closure.h"
 #include "fml/logging.h"
@@ -18,44 +17,92 @@ bool Playground::OpenPlaygroundHere(PlaygroundCallback callback) {
   if (!callback) {
     return false;
   }
-  std::once_flag glfw_init_once_flag;
-  std::call_once(glfw_init_once_flag, []() { ::glfwInit(); });
-  ::glfwSetErrorCallback([](int error_code, const char* description) {
-    FML_LOG(ERROR) << "GLFW Error (" << error_code << "): " << description;
-  });
 
-  ::glfwDefaultWindowHints();
-  ::glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-  ::glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  auto window = ::glfwCreateWindow(1080, 720, "TCR (Press \"q\" to quit)",
-                                   nullptr,  // monitor
-                                   nullptr   // sharegroup
-  );
-  if (!window) {
+  if (::SDL_Init(SDL_INIT_VIDEO) != 0) {
     return false;
   }
-  ::glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode,
-                                  int action, int mods) {
-    if (action == GLFW_RELEASE && key == GLFW_KEY_Q) {
-      ::glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
+  fml::ScopedCleanupClosure sdl_quit([]() { ::SDL_Quit(); });
+
+  Uint32 window_flags = SDL_WINDOW_RESIZABLE;
+  SDL_Window* window = nullptr;
+  SDL_Renderer* renderer = nullptr;
+
+  if (::SDL_CreateWindowAndRenderer(1080,          //
+                                    720,           //
+                                    window_flags,  //
+                                    &window,       //
+                                    &renderer      //
+                                    ) != 0) {
+    return false;
+  }
+
+  fml::ScopedCleanupClosure destroy_window_and_renderer([window, renderer]() {
+    ::SDL_DestroyRenderer(renderer);
+    ::SDL_DestroyWindow(window);
   });
-  fml::ScopedCleanupClosure auto_destroy_window(
-      [window]() { ::glfwDestroyWindow(window); });
 
   Texture texture;
-  while (true) {
-    ::glfwPollEvents();
-    if (::glfwWindowShouldClose(window)) {
-      return true;
+  SDL_Event event = {};
+  bool is_running = true;
+  while (is_running) {
+    // Process all events.
+    while (::SDL_PollEvent(&event) != 0) {
+      switch (event.type) {
+        case SDL_EVENT_KEY_UP:
+          switch (event.key.keysym.sym) {
+            case SDL_KeyCode::SDLK_q:
+            case SDL_KeyCode::SDLK_ESCAPE:
+              is_running = false;
+              break;
+            default:
+              break;
+          }
+          break;
+        case SDL_EVENT_QUIT:
+          is_running = false;
+          break;
+        default:
+          break;
+      }
     }
+    // Resize surface to match window size.
     int width = 0;
     int height = 0;
-    ::glfwGetWindowSize(window, &width, &height);
+    if (SDL_GetWindowSizeInPixels(window, &width, &height) != 0) {
+      return false;
+    }
     if (!texture.Resize({width, height})) {
       return false;
     }
+    // Invoke the callback.
     if (!callback(texture)) {
+      return false;
+    }
+    // Present the surface.
+    SDL_Surface* surface =
+        ::SDL_CreateSurfaceFrom(texture.At(0, 0),           // pixels
+                                texture.GetSize().x,        // width
+                                texture.GetSize().y,        // height
+                                texture.GetPitchInBytes(),  // pitch in bytes
+                                SDL_PIXELFORMAT_ARGB8888    // format
+        );
+    if (!surface) {
+      return false;
+    }
+    fml::ScopedCleanupClosure cleanup_surface(
+        [surface]() { ::SDL_DestroySurface(surface); });
+
+    SDL_Texture* texture = ::SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+      return false;
+    }
+    fml::ScopedCleanupClosure cleanup_texture(
+        [texture]() { ::SDL_DestroyTexture(texture); });
+
+    if (::SDL_RenderTexture(renderer, texture, nullptr, nullptr) != 0) {
+      return false;
+    }
+    if (::SDL_RenderPresent(renderer) != 0) {
       return false;
     }
   }

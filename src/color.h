@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstdlib>
 
 #include "fml/macros.h"
 
@@ -19,7 +20,19 @@ struct Color {
 
   constexpr Color() : Color(0u) {}
 
-  constexpr Color(uint32_t val) : value(val) {}
+  constexpr Color(uint32_t p_value) : value(p_value) {}
+
+  constexpr Color(uint8_t p_red,
+                  uint8_t p_green,
+                  uint8_t p_blue,
+                  uint8_t p_alpha)
+      : blue(p_blue), green(p_green), red(p_red), alpha(p_alpha) {}
+
+  static Color Rand() {
+    return Color{static_cast<uint8_t>(std::rand() % 255),
+                 static_cast<uint8_t>(std::rand() % 255),
+                 static_cast<uint8_t>(std::rand() % 255), 255};
+  }
 
   constexpr bool operator==(const Color& o) const { return o.value == value; }
 };

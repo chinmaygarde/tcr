@@ -2,7 +2,7 @@
   "build_systems": [
     {
       "name": "TCR Build All",
-      "shell_cmd": "ninja && ./tcr_unittests --gtest_filter=\"*CanCreateTexture*\"",
+      "shell_cmd": "ninja && ./tcr_unittests --gtest_filter=\"*CanOpenPlayground*\"",
       "working_dir": "${project_path}/build",
       "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,

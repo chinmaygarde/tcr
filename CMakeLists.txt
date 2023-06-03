@@ -20,12 +20,10 @@ add_subdirectory(third_party/fml)
 set(GOOGLETEST_PATH "third_party/googletest")
 set(BENCHMARK_ENABLE_TESTING FALSE)
 add_subdirectory(third_party/googlebenchmark)
-set(GLFW_BUILD_EXAMPLES FALSE)
-set(GLFW_BUILD_TESTS FALSE)
-set(GLFW_BUILD_TESTS FALSE)
-set(GLFW_BUILD_DOCS FALSE)
-set(GLFW_INSTALL FALSE)
-add_subdirectory(third_party/glfw)
+set(SDL_SHARED FALSE)
+set(SDL_STATIC TRUE)
+set(SDL_TEST FALSE)
+add_subdirectory(third_party/sdl)
 add_subdirectory(third_party/glm)
 
 include(GoogleTest)
@@ -76,7 +74,7 @@ add_executable(tcr_unittests
 target_link_libraries(tcr_unittests
   tcr
   gtest_main
-  glfw
+  SDL3::SDL3
 )
 
 get_filename_component(TCR_ASSETS_LOCATION assets ABSOLUTE)

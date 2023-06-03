@@ -22,6 +22,10 @@ class Texture {
     return allocation_.At((y * size_.x) + x);
   }
 
+  const glm::ivec2& GetSize() const { return size_; }
+
+  size_t GetPitchInBytes() const { return size_.x * sizeof(Color); }
+
  private:
   glm::ivec2 size_ = {};
   Allocation<Color> allocation_;
