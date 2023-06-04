@@ -32,7 +32,11 @@ add_library(tcr
   src/allocation.cc
   src/allocation.h
   src/color.cc
+  src/ray.cc
+  src/types.cc
   src/color.h
+  src/ray.h
+  src/types.h
   src/formats.cc
   src/formats.h
   src/texture.cc
